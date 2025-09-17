@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>الألعاب التفاعلية في همزتي الوصل والقطع</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f5;
+            font-family: 'Baloo Bhaijaan 2', cursive;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 10px;
+            position: relative;
+        }
+
+        .game-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 15px auto;
+            max-width: 800px;
+            width: 100%;
+            direction: rtl;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 100px);
+        }
+
+        .game-header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 0;
+        }
+
+        .game-header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+
+        .game-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .game-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .tab-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-content {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 400px;
+            margin-bottom: 20px;
+            border-radius: 0 0 15px 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .game-section {
+            display: none;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        /* لعبة التصنيف */
+        .classification-game {
+            text-align: center;
+        }
+
+        .word-card {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 12px 20px;
+            margin: 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            user-select: none;
+        }
+
+        .word-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .drop-zones {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .drop-zone {
+            background: #f8f9fa;
+            border: 3px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 200px;
+            width: 45%;
+            min-width: 250px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .drop-zone.drag-over {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: scale(1.02);
+        }
+
+        .dropped-word {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        /* لعبة الاختيار المتعدد */
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .quiz-question h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #dee2e6;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        /* لوحة التحكم */
+        .control-panel {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .score-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .score-card {
+            display: inline-block;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* لعبة التطابق */
+        .matching-game {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .matching-card {
+            background: linear-gradient(45deg, #ff7675, #fd79a8);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matching-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .matching-card.selected {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            transform: scale(1.1);
+        }
+
+        .matching-card.matched {
+            background: linear-gradient(45deg, #00b894, #00a085);
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .feedback {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        /* قسم التعلم */
+        .learn-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            line-height: 1.8;
+        }
+
+        .learn-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .learn-section ul {
+            list-style-type: disc;
+            padding-right: 20px;
+        }
+
+        .learn-section li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+
+        /* قسم الروابط المهمة */
+        .resource-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .resource-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .resource-link {
+            display: block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            max-width: 300px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .resource-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .author-tag {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+        }
+
+        /* استجابة للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .game-container {
+                margin: 10px;
+                padding: 10px;
+            }
+            
+            .game-header h1 {
+                font-size: 1.6em;
+            }
+            
+            .game-header p {
+                font-size: 1em;
+            }
+            
+            .drop-zone {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .word-card {
+                margin: 5px;
+                padding: 10px 15px;
+                font-size: 1.1em;
+            }
+            
+            .control-button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            
+            .resource-section {
+                padding: 15px;
+            }
+            
+            .resource-link {
+                max-width: 100%;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-container">
+            <div class="game-header">
+                <h1>🎮 الألعاب التفاعلية في همزتي الوصل والقطع</h1>
+                <p>تعلم الفرق بين همزة الوصل وهمزة القطع بطريقة ممتعة وتفاعلية</p>
+            </div>
+
+            <div class="game-tabs">
+                <button class="tab-button active" onclick="switchTab('classification')">لعبة التصنيف</button>
+                <button class="tab-button" onclick="switchTab('quiz')">اختبار سريع</button>
+                <button class="tab-button" onclick="switchTab('matching')">لعبة التطابق</button>
+                <button class="tab-button" onclick="switchTab('learn')">تعلم القواعد</button>
+            </div>
+
+            <!-- لعبة التصنيف -->
+            <div id="classification" class="game-section active">
+                <div class="classification-game">
+                    <h2 style="color: #495057; margin-bottom: 20px;">🎯 اسحب الكلمات إلى المكان الصحيح</h2>
+                    <div id="words-container">
+                        <!-- سيتم إضافة الكلمات هنا بواسطة JavaScript -->
+                    </div>
+                    <div class="drop-zones">
+                        <div class="drop-zone" id="wasl-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <h3>همزة الوصل (ا)</h3>
+                            <p style="color: #6c757d;">تسقط عند الوصل</p>
+                        </div>
+                        <div class="drop-zone" id="qata-zone" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <h3>همزة القطع (أ - إ)</h3>
+                            <p style="color: #6c757d;">لا تسقط عند الوصل</p>
+                        </div>
+                    </div>
+                    <div class="control-panel">
+                        <button class="control-button" onclick="resetClassification()">🔄 إعادة تشغيل</button>
+                        <button class="control-button" onclick="checkAnswers()">✅ فحص الإجابات</button>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-card">النقاط: <span id="class-score">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- اختبار سريع -->
+            <div id="quiz" class="game-section">
+                <h2 style="color: #495057; margin-bottom: 20px; text-align: center;">🧠 اختبار سريع</h2>
+                <div id="quiz-container">
+                    <!-- سيتم إضافة الأسئلة هنا -->
+                </div>
+                <div class="control-panel">
+                    <button class="control-button" onclick="startQuiz()">🎯 بدء الاختبار</button>
+                    <button class="control-button" onclick="nextQuestion()">➡️ السؤال التالي</button>
+                </div>
+                <div class="score-display">
+                    <div class="score-card">النقاط: <span id="quiz-score">0</span> / <span id="quiz-total">0</span></div>
+                </div>
+            </div>
+
+            <!-- لعبة التطابق -->
+            <div id="matching" class="game-section">
+                <h2 style="color: #495057; margin-bottom: 20px; text-align: center;">🔗 اربط الكلمة بنوع الهمزة</h2>
+                <div class="matching-game" id="matching-container">
+                    <!-- سيتم إضافة البطاقات هنا -->
+                </div>
+                <div class="control-panel">
+                    <button class="control-button" onclick="startMatching()">🎮 بدء اللعبة</button>
+                    <button class="control-button" onclick="resetMatching()">🔄 إعادة تشغيل</button>
+                </div>
+                <div class="score-display">
+                    <div class="score-card">المطابقات الصحيحة: <span id="matching-score">0</span></div>
+                </div>
+            </div>
+
+            <!-- قسم التعلم -->
+            <div id="learn" class="game-section">
+                <h2 style="color: #495057; margin-bottom: 20px; text-align: center;">📚 قواعد همزة الوصل والقطع</h2>
+                <div class="learn-section">
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="color: #28a745; margin-bottom: 15px;">🔗 همزة الوصل:</h3>
+                        <ul>
+                            <li>التعرّيف: همزة لا تكب على الألف و تنطق في اول الكلام فقط </li>
+                            <li>الكتابة: تكتب ألفاً مجردة (ا)</li>
+                            <li>أمثلة: الكتاب، استخدم، اثنان، ابن، امرأة</li>
+                            <li>مواضعها: أل التعريف، الأسماء العشرة، أمر الثلاثي، ماضي وأمر الخماسي والسداسي</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #dc3545; margin-bottom: 15px;">✂️ همزة القطع:</h3>
+                        <ul>
+                            <li>التعرّيف: همزة تكتب على الألف وتنطق في أول الكلام وفي وصل الكلام</li>
+                            <li>الكتابة: تكتب بهمزة فوق أو تحت الألف (أ - إ)</li>
+                            <li>أمثلة: أحمد، إبراهيم، أكل، إذا، أين</li>
+                            <li>القاعدة: كل همزة ليست همزة وصل فهي همزة قطع</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedback" class="feedback" style="display: none;"></div>
+
+            <!-- قسم الروابط المهمة -->
+            <div class="resource-section">
+                <h3>🔗 المصادر التعليمية المهمة</h3>
+                <div class="resource-links">
+                    <a href="https://omk811.blogspot.com/2023/09/blog-post_7.html" target="_blank" class="resource-link">📄 ملخص شامل لهمزة الوصل والقطع</a>
+                    <a href="https://whatsapp.com/channel/0029VamotBKCxoAy3fzUcv3T" target="_blank" class="resource-link">📱 قناة الواتساب للصف الخامس الأساسي</a>
+                </div>
+                <div class="author-tag">إعداد الأستاذ خليل البلوشي</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // بيانات الألعاب
+        const wordsData = [
+            {word: 'الكتاب', type: 'wasl', rule: 'أل التعريف'},
+            {word: 'استعمل', type: 'wasl', rule: 'أمر السداسي'},
+            {word: 'أحمد', type: 'qata', rule: 'اسم علم'},
+            {word: 'إبراهيم', type: 'qata', rule: 'اسم علم'},
+            {word: 'انطلق', type: 'wasl', rule: 'أمر الخماسي'},
+            {word: 'أكل', type: 'qata', rule: 'ماضي الثلاثي'},
+            {word: 'اثنان', type: 'wasl', rule: 'من الأسماء التي همزتها وصل فقط'},
+            {word: 'أين', type: 'qata', rule: 'اسم استفهام'},
+            {word: 'ابن', type: 'wasl', rule: 'من الأسماء التي همزتها وصل فقط'},
+            {word: 'إذا', type: 'qata', rule: 'أداة شرط'},
+            {word: 'امرأة', type: 'wasl', rule: 'من الأسماء التي همزتها وصل فقط'},
+            {word: 'أم', type: 'qata', rule: 'أداة استفهام'}
+        ];
+
+        const quizData = [
+            {
+                question: 'أي من الكلمات التالية تحتوي على همزة وصل؟',
+                options: ['الطالب', 'أحمد', 'إذا', 'أين'],
+                correct: 0,
+                explanation: 'الطالب تبدأ بأل التعريف وهي همزة وصل'
+            },
+            {
+                question: 'ما نوع الهمزة في كلمة "استخدم"؟',
+                options: ['همزة قطع', 'همزة وصل', 'لا توجد همزة', 'همزة متوسطة'],
+                correct: 1,
+                explanation: 'استخدم فعل أمر سداسي يبدأ بهمزة وصل'
+            },
+            {
+                question: 'أي من التالي صحيح حول همزة القطع؟',
+                options: ['تسقط عند الوصل', 'تثبت دائماً', 'تكتب ألفاً مجردة', 'توجد في أل التعريف'],
+                correct: 1,
+                explanation: 'همزة القطع تثبت وصلاً وابتداء'
+            }
+        ];
+
+        let classificationScore = 0;
+        let quizScore = 0;
+        let quizIndex = 0;
+        let matchingScore = 0;
+        let selectedCards = [];
+
+        // تهيئة اللعبة
+        function initGame() {
+            createWordCards();
+            updateScores();
+        }
+
+        // إنشاء بطاقات الكلمات
+        function createWordCards() {
+            const container = document.getElementById('words-container');
+            container.innerHTML = '';
+            
+            wordsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.draggable = true;
+                card.innerHTML = item.word;
+                card.dataset.type = item.type;
+                card.dataset.index = index;
+                card.ondragstart = drag;
+                container.appendChild(card);
+            });
+        }
+
+        // وظائف السحب والإفلات
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.target.closest('.drop-zone').classList.add('drag-over');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.dataset.index);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const dropZone = ev.target.closest('.drop-zone');
+            dropZone.classList.remove('drag-over');
+            
+            const wordIndex = ev.dataTransfer.getData("text");
+            const wordElement = document.querySelector(`[data-index="${wordIndex}"]`);
+            
+            if (wordElement && !dropZone.querySelector(`[data-index="${wordIndex}"]`)) {
+                const droppedWord = document.createElement('div');
+                droppedWord.className = 'dropped-word';
+                droppedWord.innerHTML = wordElement.innerHTML;
+                droppedWord.dataset.type = wordElement.dataset.type;
+                droppedWord.dataset.index = wordIndex;
+                
+                dropZone.appendChild(droppedWord);
+                wordElement.remove();
+            }
+        }
+
+        // فحص الإجابات
+        function checkAnswers() {
+            const waslZone = document.getElementById('wasl-zone');
+            const qataZone = document.getElementById('qata-zone');
+            
+            let correct = 0;
+            let total = 0;
+
+            // فحص منطقة همزة الوصل
+            const waslWords = waslZone.querySelectorAll('.dropped-word');
+            waslWords.forEach(word => {
+                total++;
+                if (word.dataset.type === 'wasl') {
+                    correct++;
+                    word.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                } else {
+                    word.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+                }
+            });
+
+            // فحص منطقة همزة القطع
+            const qataWords = qataZone.querySelectorAll('.dropped-word');
+            qataWords.forEach(word => {
+                total++;
+                if (word.dataset.type === 'qata') {
+                    correct++;
+                    word.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                } else {
+                    word.style.background = 'linear-gradient(45deg, #dc3545, #c82333)';
+                }
+            });
+
+            classificationScore = correct;
+            updateScores();
+            showFeedback(correct, total, 'classification');
+        }
+
+        // إعادة تشغيل لعبة التصنيف
+        function resetClassification() {
+            document.getElementById('wasl-zone').innerHTML = '<h3>همزة الوصل (ا)</h3><p style="color: #6c757d;">تسقط عند الوصل</p>';
+            document.getElementById('qata-zone').innerHTML = '<h3>همزة القطع (أ - إ)</h3><p style="color: #6c757d;">لا تسقط عند الوصل</p>';
+            createWordCards();
+            classificationScore = 0;
+            updateScores();
+            hideFeedback();
+        }
+
+        // بدء الاختبار
+        function startQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            showQuestion();
+        }
+
+        // عرض السؤال
+        function showQuestion() {
+            const container = document.getElementById('quiz-container');
+            if (quizIndex >= quizData.length) {
+                container.innerHTML = '<div class="quiz-question"><h3>🎉 انتهى الاختبار!</h3><p>لقد أجبت على جميع الأسئلة. أحسنت!</p></div>';
+                return;
+            }
+
+            const question = quizData[quizIndex];
+            container.innerHTML = `
+                <div class="quiz-question">
+                    <h3>${question.question}</h3>
+                    <div class="quiz-options">
+                        ${question.options.map((option, index) => 
+                            `<div class="quiz-option" onclick="selectAnswer(${index})">${option}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+            updateScores();
+        }
+
+        // اختيار الإجابة
+        function selectAnswer(selectedIndex) {
+            const question = quizData[quizIndex];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach((option, index) => {
+                option.onclick = null; // إلغاء النقر
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIndex === question.correct) {
+                quizScore++;
+            }
+
+            // عرض التفسير
+            setTimeout(() => {
+                const container = document.getElementById('quiz-container');
+                container.innerHTML += `<div class="feedback ${selectedIndex === question.correct ? 'success' : 'error'}">${question.explanation}</div>`;
+            }, 1000);
+
+            updateScores();
+        }
+
+        // السؤال التالي
+        function nextQuestion() {
+            quizIndex++;
+            showQuestion();
+        }
+
+        // بدء لعبة التطابق
+        function startMatching() {
+            const container = document.getElementById('matching-container');
+            const matchingWords = wordsData.slice(0, 6);
+            const types = ['همزة وصل', 'همزة قطع'];
+            
+            const cards = [];
+            matchingWords.forEach(word => {
+                cards.push({content: word.word, type: word.type, isWord: true});
+                cards.push({content: word.type === 'wasl' ? 'همزة وصل' : 'همزة قطع', type: word.type, isWord: false});
+            });
+
+            // خلط البطاقات
+            cards.sort(() => Math.random() - 0.5);
+
+            container.innerHTML = '';
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'matching-card';
+                cardElement.innerHTML = card.content;
+                cardElement.dataset.type = card.type;
+                cardElement.dataset.index = index;
+                cardElement.onclick = () => selectMatchingCard(cardElement);
+                container.appendChild(cardElement);
+            });
+
+            matchingScore = 0;
+            selectedCards = [];
+            updateScores();
+        }
+
+        // اختيار بطاقة المطابقة
+        function selectMatchingCard(card) {
+            if (card.classList.contains('matched') || selectedCards.includes(card)) return;
+
+            if (selectedCards.length < 2) {
+                card.classList.add('selected');
+                selectedCards.push(card);
+
+                if (selectedCards.length === 2) {
+                    checkMatch();
+                }
+            }
+        }
+
+        // فحص التطابق
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+            
+            if (card1.dataset.type === card2.dataset.type) {
+                // مطابقة صحيحة
+                setTimeout(() => {
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchingScore++;
+                    updateScores();
+                    selectedCards = [];
+                    
+                    // التحقق من انتهاء اللعبة
+                    const matchedCards = document.querySelectorAll('.matching-card.matched');
+                    if (matchedCards.length === document.querySelectorAll('.matching-card').length) {
+                        setTimeout(() => {
+                            showFeedback(matchingScore, matchingScore, 'matching', '🎉 ممتاز! لقد أتممت اللعبة بنجاح!');
+                        }, 500);
+                    }
+                }, 500);
+            } else {
+                // مطابقة خاطئة
+                setTimeout(() => {
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+                    selectedCards = [];
+                }, 1000);
+            }
+        }
+
+        // إعادة تشغيل لعبة التطابق
+        function resetMatching() {
+            document.getElementById('matching-container').innerHTML = '';
+            matchingScore = 0;
+            selectedCards = [];
+            updateScores();
+        }
+
+        // تبديل التبويبات
+        function switchTab(tabName) {
+            // إخفاء جميع الأقسام
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // إظهار القسم المحدد
+            document.getElementById(tabName).classList.add('active');
+
+            // تحديث أزرار التبويب
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // إخفاء التغذية الراجعة
+            hideFeedback();
+        }
+
+        // تحديث النقاط
+        function updateScores() {
+            document.getElementById('class-score').textContent = classificationScore;
+            document.getElementById('quiz-score').textContent = quizScore;
+            document.getElementById('quiz-total').textContent = quizData.length;
+            document.getElementById('matching-score').textContent = matchingScore;
+        }
+
+        // عرض التغذية الراجعة
+        function showFeedback(correct, total, gameType, customMessage = '') {
+            const feedback = document.getElementById('feedback');
+            let message;
+            
+            if (customMessage) {
+                message = customMessage;
+            } else {
+                const percentage = Math.round((correct / total) * 100);
+                if (percentage === 100) {
+                    message = `🎉 رائع! أجبت بشكل صحيح بنسبة ${percentage}%`;
+                } else if (percentage >= 70) {
+                    message = `👏 جيد جداً! أجبت بشكل صحيح بنسبة ${percentage}%`;
+                } else if (percentage >= 50) {
+                    message = `👍 ليس سيئاً! أجبت بشكل صحيح بنسبة ${percentage}%`;
+                } else {
+                    message = `😔 حاول مرة أخرى! أجبت بشكل صحيح بنسبة ${percentage}%`;
+                }
+            }
+            
+            feedback.textContent = message;
+            feedback.className = 'feedback ' + (correct === total ? 'success' : 'error');
+            feedback.style.display = 'block';
+            
+            // إخفاء التغذية بعد 3 ثوانٍ
+            setTimeout(() => {
+                hideFeedback();
+            }, 3000);
+        }
+
+        // إخفاء التغذية الراجعة
+        function hideFeedback() {
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        // تهيئة اللعبة عند تحميل الصفحة
+        window.onload = initGame;
+    </script>
+</body>
+</html>
